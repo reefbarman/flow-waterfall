@@ -1,4 +1,76 @@
 flow-waterfall
 ==============
 
-A node module to help ease the pain of callback hell by running callbacks in series and allowing skipping through the chain
+A node module to help ease the pain of callback hell by running tasks in series and allowing skipping through the chain of tasks.
+
+If an error happens anywhere in the chain the rest of the tasks are skipped and the completion callback is called.
+
+The callback passed to each task will advance the chain based on two factors.
+
+The first argument passed to the callback is either null or an error object if an error occured. If an error occurs the complete callback is called straight away and the remaining tasks are skipped.
+
+The second argument can either be true, false or an index for a task to run. If true is passed the next task in the chain is run, if false is passed the remaining tasks are skipped and the completion callback is run, if an interger is passed the task with a matching index in the array of tasks (as long as its further down the chain) is run.
+
+The remaining arguments will be passed on to the next task called.
+
+##examples##
+
+```javascript
+var waterfall = require("flow-waterfall");
+
+waterfall([
+  function(fCallback){
+    LongAsyncFunction(function(cErr, result1, result2){
+      fCallback(cErr, true, result1, result2); //2nd argument specifies we want to continue the chain
+    });  
+  },
+  function(result1, result2, fCallback){
+    if (result1)
+    {
+      fCallback(null, true); //continue chain
+    }
+    else if (result2)
+    {
+      fCallback(null, 3, result2); //skip ahead in chain to callback at index 3
+    }
+    else
+    {
+      fCallback(new Error("No results returned"));
+    }
+  },
+  function(fCallback){
+    AnotherAsyncFunction(fCallback); //continue chain after callback
+  },
+  function(result, fCallback){
+    if (result)
+    {
+      CoolAsyncFunction(result, function(cErr, retValue1, retValue2){
+        if (retValue)
+        {
+          fCallback(null, false, retValue1, retValue2); //Skip rest of the chain and go straight to complete callback
+        }
+        else
+        {
+          fCallback(cErr, true); //continue chain
+        }
+      });
+    }
+    else
+    {
+      throw new Error("missing result"); //Thrown errors caught and returned to complete callback
+    }
+  },
+  function(fCallback){
+    LastAsyncFunction(fCallback);
+  }
+], function(err, a, b){
+  if (err)
+  {
+    console.err(err.message);
+  }
+  else
+  {
+    console.log(a + b);
+  }
+});
+```
