@@ -13,7 +13,11 @@ The second argument can either be true, false or an index for a task to run. If 
 
 The remaining arguments will be passed on to the next task called.
 
-##examples##
+## Installation
+
+npm install flow-waterfall
+
+## Usage
 
 ```javascript
 var waterfall = require("flow-waterfall");
@@ -74,3 +78,7 @@ waterfall([
   }
 });
 ```
+
+## Test
+
+npm test
