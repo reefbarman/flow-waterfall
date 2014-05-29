@@ -1,26 +1,33 @@
 {
-  "name": "flow-waterfall",
-  "version": "0.0.1",
-  "description": "A node module to help ease the pain of callback hell by running callbacks in series and allowing skipping through the chain",
-  "main": "index.js",
-  "scripts": {
-    "test": "make test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/reefbarman/flow-waterfall.git"
-  },
-  "keywords": [
-    "async",
-    "waterfall",
-    "callback",
-    "series",
-    "step"
-  ],
-  "author": "Tristan Cartledge <tristan.cartledge@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/reefbarman/flow-waterfall/issues"
-  },
-  "homepage": "https://github.com/reefbarman/flow-waterfall"
+    "name": "flow-waterfall",
+    "version": "0.1.0",
+    "description": "A node module to help ease the pain of callback hell by running callbacks in series and allowing skipping through the chain",
+    "main": "index.js",
+    "scripts": {
+        "test": "make test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/reefbarman/flow-waterfall.git"
+    },
+    "keywords": [
+        "async",
+        "waterfall",
+        "callback",
+        "series",
+        "step"
+    ],
+    "author": "Tristan Cartledge <tristan.cartledge@gmail.com>",
+    "license": {
+        "type": "MIT",
+        "url": "https://github.com/reefbarman/flow-waterfall/blob/master/LICENSE"
+    },
+    "bugs": {
+        "url": "https://github.com/reefbarman/flow-waterfall/issues"
+    },
+    "homepage": "https://github.com/reefbarman/flow-waterfall",
+    "devDependencies": {
+        "chai": "^1.9.1",
+        "mocha": "^1.20.0"
+    }
 }
