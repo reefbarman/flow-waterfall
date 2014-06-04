@@ -2,7 +2,7 @@
 
 /**
  * A function to help control asynchronous called flow based on the waterfall concept
- * This implmentation allows additional control by being able to branch code
+ * This implementation allows additional control by being able to branch code
  * 
  * @param {function[]} aTasks - a list of tasks to run in order of execution
  * @param {WaterFall~completeCallback} fComplete - the callback to run on completion of the waterfall
@@ -11,37 +11,56 @@
 function WaterFall(aTasks, fComplete, cScope)
 {
     cScope = cScope ? cScope : this;
-    
+
     var fGetResults = function(aArguments, fOnNextTask){
         var aArgs = [];
-                        
+
         for (var i = 2; i < aArguments.length; i++)
         {
             aArgs.push(aArguments[i]);
         }
-        
+
         aArgs.push(fOnNextTask);
-        
+
         return aArgs;
     };
-    
+
     var fGetFinalResults = function(aArguments){
         var aArgs = [null];
-                        
+
         for (var i = 2; i < aArguments.length; i++)
         {
             aArgs.push(aArguments[i]);
         }
-        
+
         return aArgs;
     };
-    
+
     var nCurrentTask = -1;
-    
+
+    var cTaskMap = {};
+
+    for (var i = 0; i < aTasks.length; i++)
+    {
+        var sTaskName = aTasks[i].name;
+
+        if (sTaskName)
+        {
+            if (!cTaskMap[sTaskName])
+            {
+                cTaskMap[sTaskName] = i;
+            }
+            else
+            {
+                fComplete.call(cScope, new TypeError("Named tasked needs to be unique! Found duplicate task: " + sTaskName));
+            }
+        }
+    }
+
     if (aTasks && aTasks.length > 0)
     {
         var fOnNextTask = function(cErr, advance){
-            //On an error the waterfall is immedietaly completed and the error is passed on
+            //On an error the waterfall is immediately completed and the error is passed on
             if (cErr)
             {
                 fComplete.call(cScope, cErr);
@@ -77,27 +96,48 @@ function WaterFall(aTasks, fComplete, cScope)
                         fComplete.apply(cScope, fGetFinalResults(arguments));
                     }
                 }
-                else if (typeof advance == "number")
+                else if (typeof advance == "number" || typeof advance == "string")
                 {
-                    if (advance <= nCurrentTask)
+                    var nNextTaskIndex = -1;
+
+                    if (typeof advance == "number")
                     {
-                        fComplete.call(cScope, new RangeError("Can't advance to already run tasks"));
-                    }
-                    else if (advance >= aTasks.length)
-                    {
-                        fComplete.call(cScope, new RangeError("Can't advance to an index greater then number of tasks available"));
+                        nNextTaskIndex = advance;
                     }
                     else
                     {
-                        nCurrentTask = advance;
-                        
-                        try
+                        if (cTaskMap[advance])
                         {
-                            aTasks[nCurrentTask].apply(cScope, fGetResults(arguments, fOnNextTask));
+                            nNextTaskIndex = cTaskMap[advance];
                         }
-                        catch (cErr)
+                        else
                         {
-                            fComplete.call(cScope, cErr);
+                            fComplete.call(cScope, new RangeError("Unknown task: " + advance));
+                        }
+                    }
+
+                    if (nNextTaskIndex >= 0)
+                    {
+                        if (nNextTaskIndex <= nCurrentTask)
+                        {
+                            fComplete.call(cScope, new RangeError("Can't advance to already run tasks"));
+                        }
+                        else if (nNextTaskIndex >= aTasks.length)
+                        {
+                            fComplete.call(cScope, new RangeError("Can't advance to an index greater then number of tasks available"));
+                        }
+                        else
+                        {
+                            nCurrentTask = nNextTaskIndex;
+
+                            try
+                            {
+                                aTasks[nCurrentTask].apply(cScope, fGetResults(arguments, fOnNextTask));
+                            }
+                            catch (cErr)
+                            {
+                                fComplete.call(cScope, cErr);
+                            }
                         }
                     }
                 }

@@ -1,6 +1,6 @@
 {
     "name": "flow-waterfall",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A node module to help ease the pain of callback hell by running callbacks in series and allowing skipping through the chain",
     "main": "index.js",
     "scripts": {
@@ -27,7 +27,7 @@
     },
     "homepage": "https://github.com/reefbarman/flow-waterfall",
     "devDependencies": {
-        "chai": "^1.9.1",
-        "mocha": "^1.20.0"
+        "chai": "1.9.x",
+        "mocha": "1.20.x"
     }
 }

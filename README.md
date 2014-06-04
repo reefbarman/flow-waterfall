@@ -9,7 +9,7 @@ The callback passed to each task will advance the chain based on two factors.
 
 The first argument passed to the callback is either null or an error object if an error occured. If an error occurs the complete callback is called straight away and the remaining tasks are skipped.
 
-The second argument can either be true, false or an index for a task to run. If true is passed the next task in the chain is run, if false is passed the remaining tasks are skipped and the completion callback is run, if an interger is passed the task with a matching index in the array of tasks (as long as its further down the chain) is run.
+The second argument can either be true, false, an index or a name of a task to run. If true is passed the next task in the chain is run, if false is passed the remaining tasks are skipped and the completion callback is run, if an integer is passed the task with a matching index in the array of tasks (as long as its further down the chain) is run. If a string is passed and the tasks function is named then that task will run
 
 The remaining arguments will be passed on to the next task called.
 
@@ -49,9 +49,13 @@ waterfall([
     if (result)
     {
       CoolAsyncFunction(result, function(cErr, retValue1, retValue2){
-        if (retValue)
+        if (retValue1 > 5)
         {
-          fCallback(null, false, retValue1, retValue2); //Skip rest of the chain and go straight to complete callback
+            fCallback(null, false, retValue1, retValue2); //Skip rest of the chain and go straight to complete callback
+        }
+        else if (retValue2 > 5)
+        {
+            fCallback(null, "myNamedFunction", retValue1, retValue2); //Skip rest of the chain and go straight to complete callback
         }
         else
         {
@@ -64,8 +68,11 @@ waterfall([
       throw new Error("missing result"); //Thrown errors caught and returned to complete callback
     }
   },
-  function(fCallback){
-    LastAsyncFunction(fCallback);
+  function (fCallback){
+    AndAnotherAsyncFunction(fCallback); //continue chain after callback
+  },
+  function myNamedFunction(fCallback, retValue1, retValue2){
+    LastAsyncFunction(retValue1, retValue2, fCallback);
   }
 ], function(err, a, b){
   if (err)
@@ -82,3 +89,8 @@ waterfall([
 ## Test
 
 npm test
+
+## CHANGE LOG
+
+0.2.0:
+    * Support for named functions added! So instead of having to pass an index you can now name the tasks and use the task name

@@ -3,28 +3,28 @@ var waterfall   = require("../index");
 
 var fTest = function(a, fResult){
     waterfall([
-        function(fCallback){
+        function task1(fCallback){
             fCallback(null, true, a);
         },
-        function(a, fCallback){
+        function task2(a, fCallback){
             switch(a)
             {
                 case 1:
                     fCallback(null, true, a);
                     break;
                 case 2:
-                    fCallback(null, 3, a);
+                    fCallback(null, "task4", a);
                     break;
                 case 3:
                     fCallback(null, false, a);
                     break;
             }
         },
-        function(a, fCallback){
+        function task3(a, fCallback){
             a += 2;
             fCallback(null, true, a);
         },
-        function(a, fCallback){
+        function task4(a, fCallback){
             a *= 3;
             
             switch (a)
@@ -37,15 +37,15 @@ var fTest = function(a, fResult){
                     break;
             }
         },
-        function(a, fCallback){
+        function task5(a, fCallback){
             a -= 3;
             fCallback(null, true, a);
         },
-        function(a, fCallback){
+        function task6(a, fCallback){
             a += 3;
             fCallback(null, true, a);
         },
-        function(a, fCallback){
+        function task7(a, fCallback){
             a /= 3;
             fCallback(null, true, a);
         }
